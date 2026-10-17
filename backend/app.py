@@ -127,7 +127,7 @@ def ai_assist():
         3. Next Step: (Stay or move forward)
         """
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.8-flash',
             contents=prompt,
         )
         return jsonify({"advice": response.text})
