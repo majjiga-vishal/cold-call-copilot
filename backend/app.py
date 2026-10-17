@@ -135,7 +135,7 @@ def ai_assist():
         for model_name in candidate_models:
             try:
                 response = client.models.generate_content(
-                    model=model_name,
+                    model='gemini-3.8-flash',
                     contents=prompt,
                 )
                 if response and response.text:
