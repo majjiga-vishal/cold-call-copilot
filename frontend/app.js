@@ -1,4 +1,4 @@
-const API_BASE = "http://127.0.0.1:5000";
+const API_BASE = "https://cold-call-copilot-api.onrender.com";
 
 let currentCallId = null;
 let currentStageIndex = 0;
