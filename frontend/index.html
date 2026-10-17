@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cold Call Co-Pilot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-950 px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <span class="inline-block w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+      <h1 class="text-lg font-bold tracking-tight text-white">Cold Call Co-Pilot</h1>
+      <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Live Call Screen</span>
+    </div>
+    <div id="call-status-badge" class="text-xs font-semibold px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
+      Ready to Dial
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="flex-1 grid grid-cols-12 gap-6 p-6">
+    
+    <!-- Left Column: Stage Progression & Playbook -->
+    <aside class="col-span-4 flex flex-col gap-4">
+      
+      <!-- Prospect Info Card -->
+      <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+        <h2 class="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-3">Prospect Details</h2>
+        <div class="space-y-2">
+          <input id="prospect-name" type="text" placeholder="Prospect Name" value="Alex Morgan" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" />
+          <input id="company-name" type="text" placeholder="Company Name" value="FinScale Corp" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" />
+          <button id="btn-start-call" onclick="startCall()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm py-2 rounded-lg transition shadow-sm">
+            📞 Start Active Call
+          </button>
+        </div>
+      </div>
+
+      <!-- Call Stages Pipeline -->
+      <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 flex-1 flex flex-col">
+        <h2 class="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-3">Call Journey Stages</h2>
+        <div id="stages-container" class="space-y-2.5 flex-1 overflow-y-auto pr-1">
+          <!-- Stages rendered via JavaScript -->
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Center Column: Current Stage Playbook & Guidance -->
+    <main class="col-span-5 flex flex-col gap-4">
+      
+      <!-- Stage Coaching Panel -->
+      <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-5 flex flex-col">
+        <div class="flex justify-between items-center mb-3">
+          <span id="active-stage-title" class="text-lg font-bold text-white">1. The Hook / Opener</span>
+          <span id="stage-exit-gate" class="text-xs bg-indigo-950/70 border border-indigo-700/50 text-indigo-300 px-2.5 py-1 rounded-md">Goal: Buy 30 seconds</span>
+        </div>
+
+        <div class="space-y-3 mb-4">
+          <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+            <p class="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-1">Recommended Talking Point</p>
+            <p id="script-opener" class="text-sm text-slate-200">"Hey Alex, I know I caught you out of the blue. Do you have 30 seconds for me to tell you why I called, and you can tell me if it makes sense?"</p>
+          </div>
+
+          <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+            <p class="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-1">Common Trap To Avoid</p>
+            <p id="stage-trap" class="text-xs text-slate-300">Don't launch into a feature pitch. Avoid asking 'How are you today?'—it flags you as an amateur telemarketer.</p>
+          </div>
+        </div>
+
+        <!-- Prospect Response Box & AI Trigger -->
+        <div class="mt-auto">
+          <label class="block text-xs font-medium text-slate-400 mb-1">What did the prospect just say / react?</label>
+          <div class="flex gap-2">
+            <input id="prospect-reaction-input" type="text" placeholder="e.g. 'I'm super busy, send me an email' or 'We already use a tool'" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" />
+            <button onclick="requestAiCoach()" class="bg-violet-600 hover:bg-violet-500 px-4 py-2 rounded-lg text-xs font-semibold text-white whitespace-nowrap transition flex items-center gap-1.5">
+              ✨ AI Coach
+            </button>
+          </div>
+        </div>
+
+        <!-- AI Real-Time Guidance Display -->
+        <div id="ai-response-box" class="mt-3 p-3 rounded-lg bg-violet-950/30 border border-violet-800/40 text-xs text-violet-200 hidden whitespace-pre-line leading-relaxed">
+        </div>
+      </div>
+
+      <!-- Action Button: Next Stage -->
+      <div class="flex gap-3">
+        <button onclick="advanceStage()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm py-2.5 rounded-xl transition flex justify-center items-center gap-2">
+          Advance to Next Stage ➔
+        </button>
+        <button onclick="endCurrentCall()" class="bg-rose-600/20 hover:bg-rose-600/30 border border-rose-600/40 text-rose-300 text-sm font-medium px-4 py-2.5 rounded-xl transition">
+          End Call
+        </button>
+      </div>
+
+    </main>
+
+    <!-- Right Column: Call Notes & History -->
+    <aside class="col-span-3 bg-slate-950/60 border border-slate-800 rounded-xl p-4 flex flex-col">
+      <h2 class="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-3">Live Call Log</h2>
+      <div id="notes-timeline" class="flex-1 overflow-y-auto space-y-2.5 pr-1 text-xs">
+        <div class="text-slate-500 text-center py-10">No logs yet. Hit "Start Active Call" to begin recording notes.</div>
+      </div>
+      <div class="mt-4 pt-3 border-t border-slate-800">
+        <textarea id="quick-note" rows="2" placeholder="Quick jot down details..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500"></textarea>
+        <button onclick="saveQuickNote()" class="w-full mt-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-1.5 rounded-lg transition font-medium">
+          + Add Note
+        </button>
+      </div>
+    </aside>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
